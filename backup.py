@@ -25,7 +25,9 @@ def cli(password, world, directory, sync):
         r = mcr.command('/list')
         count = int(r.split()[2])
         if count != 0:
-            print(f'There are {count} players online, stopping')
+            are = 'is' if count == 1 else 'are'
+            s = '' if count == 1 else 's'
+            print(f'There {are} {count} player{s} online, stopping')
         else:
             print('Saving world...')
             r = mcr.command('/save-all')
