@@ -1,4 +1,5 @@
 import click
+import socket
 import os
 import tarfile
 from mcrcon import MCRcon
@@ -16,8 +17,10 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
               help='Directory to back up')
 @click.option('--directory', default='backups',
               help='Directory for storing backups')
+@click.option('--source', help='Source, e.g. server name',
+              default=lambda: socket.gethostname())
 @click.option('--sync', help='Server to sync to, not yet implemented')
-def cli(password, world, directory, sync):
+def cli(password, world, directory, source, sync):
     """
     This program backs up a local Minecraft server instance
     """
@@ -34,7 +37,7 @@ def cli(password, world, directory, sync):
             print('Turning save off...')
             r = mcr.command('/save-off')
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            filename = f'world-{timestamp}.tar.xz'
+            filename = f'world-{source}-{timestamp}.tar.xz'
             if not os.path.isdir(directory):
                 os.makedirs(directory)
             with tarfile.open(os.path.join(directory, filename),
