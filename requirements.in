@@ -1,0 +1,6 @@
+pip-tools
+flake8
+
+python-dotenv
+click
+mcrcon
