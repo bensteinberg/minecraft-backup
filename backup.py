@@ -34,7 +34,7 @@ def cli(password, world, directory, sync):
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             filename = f'world-{timestamp}.tar.xz'
             if not os.path.isdir(directory):
-                os.path.makedirs(directory)
+                os.makedirs(directory)
             with tarfile.open(os.path.join(directory, filename),
                               'w:xz') as tar:
                 tar.add(world)
