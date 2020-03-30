@@ -1,6 +1,9 @@
 minecraft-backup
 ================
 
+This program backs up a local Minecraft server instance. You must have
+enabled RCON on the server.
+
 Run
 
     python3 -m venv env
