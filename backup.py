@@ -11,6 +11,10 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
                         help_option_names=['-h', '--help'])
 
 
+class MinecraftBackupException(Exception):
+    pass
+
+
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--password', required=True)
 @click.option('--port', default=25575)
@@ -32,28 +36,33 @@ def cli(password, port, world, directory, if_empty, source, keep_only, sync):
     p = Path(directory)
     p.mkdir(exist_ok=True)
     with MCRcon('localhost', password, port=port) as mcr:
-        if keep_only:
-            backup_files = sorted([f for f in p.glob('*.tar.xz')],
-                                  key=lambda x: x.stat().st_ctime)
-            deleted = [(f.name, f.unlink()) for f in backup_files[:-keep_only]]
-            for d in deleted:
-                print(f'Deleted {d[0]}')
-        if if_empty:
-            r = mcr.command('/list')
-            count = int(r.split()[2])
-            if count != 0:
-                are = 'is' if count == 1 else 'are'
-                s = '' if count == 1 else 's'
-                print(f'There {are} {count} player{s} online, stopping')
-                return
-        print('Saving world...')
-        r = mcr.command('/save-all')
-        print('Turning save off...')
-        r = mcr.command('/save-off')
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        filename = f'world-{source}-{timestamp}.tar.xz'
-        with tarfile.open(p / filename, 'w:xz') as tar:
-            tar.add(world)
-        print(f'Wrote world to {filename}')
-        print('Turning save back on.')
-        r = mcr.command('/save-on')
+        try:
+            if if_empty:
+                r = mcr.command('/list')
+                count = int(r.split()[2])
+                if count != 0:
+                    raise MinecraftBackupException
+        except MinecraftBackupException:
+            are = 'is' if count == 1 else 'are'
+            s = '' if count == 1 else 's'
+            print(f'There {are} {count} player{s} online, stopping')
+        else:
+            print('Saving world...')
+            r = mcr.command('/save-all')
+            print('Turning save off...')
+            r = mcr.command('/save-off')
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            filename = f'world-{source}-{timestamp}.tar.xz'
+            with tarfile.open(p / filename, 'w:xz') as tar:
+                tar.add(world)
+                print(f'Wrote world to {filename}')
+                print('Turning save back on.')
+                r = mcr.command('/save-on')
+        finally:
+            if keep_only:
+                backup_files = sorted([f for f in p.glob('*.tar.xz')],
+                                      key=lambda x: x.stat().st_ctime)
+                deleted = [(f.name, f.unlink()) for f in
+                           backup_files[:-keep_only]]
+                for d in deleted:
+                    print(f'Deleted {d[0]}')
