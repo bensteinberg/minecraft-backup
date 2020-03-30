@@ -24,12 +24,14 @@ def cli(password, world, sync):
         if count != 0:
             print(f'There are {count} players online, stopping')
         else:
-            print('Saving...')
+            print('Saving world...')
             r = mcr.command('/save-all')
             print('Turning save off...')
             r = mcr.command('/save-off')
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            with tarfile.open(f'world-{timestamp}.tar.xz', 'w:xz') as tar:
+            filename = f'world-{timestamp}.tar.xz'
+            with tarfile.open(filename, 'w:xz') as tar:
                 tar.add(world)
+            print(f'Wrote world to {filename}')
             print('Turning save back on.')
             r = mcr.command('/save-on')
