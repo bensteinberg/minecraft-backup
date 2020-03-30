@@ -13,6 +13,7 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--password', required=True)
+@click.option('--port', default=25575)
 @click.option('--world', default='world',
               help='Directory to back up')
 @click.option('--directory', default='backups',
@@ -20,11 +21,11 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
 @click.option('--source', help='Source, e.g. server name',
               default=lambda: socket.gethostname())
 @click.option('--sync', help='Server to sync to, not yet implemented')
-def cli(password, world, directory, source, sync):
+def cli(password, port, world, directory, source, sync):
     """
     This program backs up a local Minecraft server instance
     """
-    with MCRcon('localhost', password) as mcr:
+    with MCRcon('localhost', password, port=port) as mcr:
         r = mcr.command('/list')
         count = int(r.split()[2])
         if count != 0:
