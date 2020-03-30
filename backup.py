@@ -55,9 +55,9 @@ def cli(password, port, world, directory, if_empty, source, keep_only, sync):
             filename = f'world-{source}-{timestamp}.tar.xz'
             with tarfile.open(p / filename, 'w:xz') as tar:
                 tar.add(world)
-                print(f'Wrote world to {filename}')
-                print('Turning save back on.')
-                r = mcr.command('/save-on')
+            print(f'Wrote world to {filename}')
+            print('Turning save back on.')
+            r = mcr.command('/save-on')
         finally:
             if keep_only:
                 backup_files = sorted([f for f in p.glob('*.tar.xz')],
