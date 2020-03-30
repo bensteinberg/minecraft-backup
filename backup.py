@@ -12,7 +12,7 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--password', required=True)
-@click.option('--world', default='/home/minecraft/world',
+@click.option('--world', default='world',
               help='Directory to back up')
 @click.option('--directory', default='backups',
               help='Directory for storing backups')
