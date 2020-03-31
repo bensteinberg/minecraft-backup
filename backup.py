@@ -43,8 +43,7 @@ def cli(password, port, world, directory, if_empty, source, keep_only, sync):
                 if count != 0:
                     raise MinecraftBackupException
         except MinecraftBackupException:
-            are = 'is' if count == 1 else 'are'
-            s = '' if count == 1 else 's'
+            are, s = ('is', '') if count == 1 else ('are', 's')
             print(f'There {are} {count} player{s} online, stopping')
         else:
             print('Saving world...')
