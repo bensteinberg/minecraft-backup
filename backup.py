@@ -5,6 +5,7 @@ from pathlib import Path
 from mcrcon import MCRcon
 from datetime import datetime
 from dotenv import load_dotenv
+from contextlib import contextmanager
 
 load_dotenv()
 CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
@@ -13,6 +14,20 @@ CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
 
 class MinecraftBackupException(Exception):
     pass
+
+
+@contextmanager
+def mcrcon(host, password, port):
+    try:
+        mcr = MCRcon(host, password, port=port)
+        mcr.connect()
+    except ConnectionResetError as err:
+        yield None, err
+    else:
+        try:
+            yield mcr, None
+        finally:
+            mcr.disconnect()
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
@@ -35,34 +50,37 @@ def cli(password, port, world, directory, careful, source, keep_only, sync):
     """
     p = Path(directory)
     p.mkdir(exist_ok=True)
-    with MCRcon('localhost', password, port=port) as mcr:
-        try:
-            if careful:
-                r = mcr.command('/list')
-                count = int(r.split()[2])
-                if count != 0:
-                    raise MinecraftBackupException
-        except MinecraftBackupException:
-            are, s = ('is', '') if count == 1 else ('are', 's')
-            print(f'There {are} {count} player{s} online, stopping')
+    with mcrcon('localhost', password, port=port) as (mcr, err):
+        if err:
+            print('Server reset connection, stopping')
         else:
-            print('Saving world...')
-            r = mcr.command('/save-all')
-            print('Turning save off...')
-            r = mcr.command('/save-off')
-            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            filename = f'world-{source}-{timestamp}.tar.xz'
-            with tarfile.open(p / filename, 'w:xz') as tar:
-                print('Compressing world...')
-                tar.add(world)
-            print(f'Wrote world to {filename}')
-            print('Turning save back on.')
-            r = mcr.command('/save-on')
-        finally:
-            if keep_only:
-                backup_files = sorted([f for f in p.glob('*.tar.xz')],
-                                      key=lambda x: x.stat().st_ctime)
-                deleted = [(f.name, f.unlink()) for f in
-                           backup_files[:-keep_only]]
-                for d in deleted:
-                    print(f'Deleted {d[0]}')
+            try:
+                if careful:
+                    r = mcr.command('/list')
+                    count = int(r.split()[2])
+                    if count != 0:
+                        raise MinecraftBackupException
+            except MinecraftBackupException:
+                are, s = ('is', '') if count == 1 else ('are', 's')
+                print(f'There {are} {count} player{s} online, stopping')
+            else:
+                print('Saving world...')
+                r = mcr.command('/save-all')
+                print('Turning save off...')
+                r = mcr.command('/save-off')
+                timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                filename = f'world-{source}-{timestamp}.tar.xz'
+                with tarfile.open(p / filename, 'w:xz') as tar:
+                    print('Compressing world...')
+                    tar.add(world)
+                print(f'Wrote world to {filename}')
+                print('Turning save back on.')
+                r = mcr.command('/save-on')
+            finally:
+                if keep_only:
+                    backup_files = sorted([f for f in p.glob('*.tar.xz')],
+                                          key=lambda x: x.stat().st_ctime)
+                    deleted = [(f.name, f.unlink()) for f in
+                               backup_files[:-keep_only]]
+                    for d in deleted:
+                        print(f'Deleted {d[0]}')
