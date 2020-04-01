@@ -22,14 +22,14 @@ class MinecraftBackupException(Exception):
               help='Directory to back up')
 @click.option('--directory', default='backups',
               help='Directory for storing backups')
-@click.option('--if-empty/--no-if-empty', default=False,
+@click.option('--careful/--careless', default=False,
               help='Back up only when no players are present')
 @click.option('--source', help='Source, e.g. server name',
               default=lambda: socket.gethostname())
 @click.option('--keep-only', type=int,
               help='Number of backup files to keep')
 @click.option('--sync', help='Server to sync to, not yet implemented')
-def cli(password, port, world, directory, if_empty, source, keep_only, sync):
+def cli(password, port, world, directory, careful, source, keep_only, sync):
     """
     This program backs up a local Minecraft server instance
     """
@@ -37,7 +37,7 @@ def cli(password, port, world, directory, if_empty, source, keep_only, sync):
     p.mkdir(exist_ok=True)
     with MCRcon('localhost', password, port=port) as mcr:
         try:
-            if if_empty:
+            if careful:
                 r = mcr.command('/list')
                 count = int(r.split()[2])
                 if count != 0:
