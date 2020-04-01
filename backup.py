@@ -2,32 +2,11 @@ import click
 import socket
 import tarfile
 from pathlib import Path
-from mcrcon import MCRcon
 from datetime import datetime
 from dotenv import load_dotenv
-from contextlib import contextmanager
+from util import safe_MCRcon, MinecraftBackupException, CONTEXT_SETTINGS
 
 load_dotenv()
-CONTEXT_SETTINGS = dict(auto_envvar_prefix='RCON',
-                        help_option_names=['-h', '--help'])
-
-
-class MinecraftBackupException(Exception):
-    pass
-
-
-@contextmanager
-def mcrcon(host, password, port):
-    try:
-        mcr = MCRcon(host, password, port=port)
-        mcr.connect()
-    except ConnectionResetError as err:
-        yield None, err
-    else:
-        try:
-            yield mcr, None
-        finally:
-            mcr.disconnect()
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
@@ -50,7 +29,7 @@ def cli(password, port, world, directory, careful, source, keep_only, sync):
     """
     p = Path(directory)
     p.mkdir(exist_ok=True)
-    with mcrcon('localhost', password, port=port) as (mcr, err):
+    with safe_MCRcon('localhost', password, port=port) as (mcr, err):
         if err:
             print('Server reset connection, stopping')
         else:
