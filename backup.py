@@ -53,6 +53,7 @@ def cli(password, port, world, directory, careful, source, keep_only, sync):
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             filename = f'world-{source}-{timestamp}.tar.xz'
             with tarfile.open(p / filename, 'w:xz') as tar:
+                print('Compressing world...')
                 tar.add(world)
             print(f'Wrote world to {filename}')
             print('Turning save back on.')
