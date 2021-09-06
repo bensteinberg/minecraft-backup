@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='minecraft-backup',
-    version='0.2',
+    version='0.3',
     py_modules=['backup'],
     install_requires=[
         'Click',
