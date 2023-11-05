@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "mcbackup"
+version = "0.4.0"
+description = "Backs up a local Minecraft server instance"
+authors = ["Ben Steinberg <ben@potswift.org>"]
+license = "GPL-3.0-or-later"
+readme = "README.md"
+packages = [{include = "minecraft_backup"}]
+
+[tool.poetry.scripts]
+mcbackup = 'minecraft_backup.backup:cli'
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-dotenv = "^1.0.0"
+click = "^8.1.7"
+mcrcon = "^0.7.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,13 +1,15 @@
-minecraft-backup
+mcbackup
 ================
 
 This program backs up a local Minecraft server instance. You must have
 enabled RCON on the server.
 
-Install `python3-venv` if necessary, then run
+Installation
+------------
 
-    python3 -m venv env
-    . env/bin/activate
-    pip install -r requirements.txt
-    pip install --editable .
-    mcbackup --help
+Run `pipx install git+https://github.com/bensteinberg/minecraft-backup.git`.
+
+Usage
+-----
+
+Run `mcbackup --help` for usage instructions.

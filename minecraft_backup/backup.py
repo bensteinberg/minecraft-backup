@@ -4,7 +4,7 @@ import tarfile
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
-from util import safe_MCRcon, MinecraftBackupException, CONTEXT_SETTINGS
+from .util import safe_MCRcon, MinecraftBackupException, CONTEXT_SETTINGS
 
 load_dotenv()
 
