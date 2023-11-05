@@ -3,10 +3,10 @@ import socket
 import tarfile
 from pathlib import Path
 from datetime import datetime
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from .util import safe_MCRcon, MinecraftBackupException, CONTEXT_SETTINGS
 
-load_dotenv()
+load_dotenv(find_dotenv(usecwd=True))
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
