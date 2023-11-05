@@ -7,7 +7,7 @@ enabled RCON on the server.
 Installation
 ------------
 
-Run `pipx install git+https://github.com/bensteinberg/minecraft-backup.git`.
+Run `pip install mcbackup`.
 
 Usage
 -----

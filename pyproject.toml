@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "mcbackup"
-version = "0.4.0"
+version = "0.4.1"
 description = "Backs up a local Minecraft server instance"
 authors = ["Ben Steinberg <ben@potswift.org>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
+repository = "https://github.com/bensteinberg/minecraft-backup/"
 packages = [{include = "minecraft_backup"}]
 
 [tool.poetry.scripts]
